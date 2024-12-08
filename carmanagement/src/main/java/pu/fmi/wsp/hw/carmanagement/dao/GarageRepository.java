@@ -20,7 +20,7 @@ public interface GarageRepository extends CrudRepository<Garage, Long> {
 			group by g.id, m.scheduledDate 
 			where g.id = :garageId and m.scheduledDate >= :startDate and m.scheduledDate <= :endDate
 			""")
-	Set<GarageDailyAvailabilityReportDTO> getReport(
+	Set<GarageDailyAvailabilityReportDTO> getDailyAvailabilityReport(
 		@Param("garageId") Long garageId,
 		@Param("startDate") LocalDate startDate,
 		@Param("endDate") LocalDate endDate);

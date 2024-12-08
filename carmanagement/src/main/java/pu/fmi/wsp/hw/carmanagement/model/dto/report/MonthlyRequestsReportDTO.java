@@ -1,22 +1,27 @@
 package pu.fmi.wsp.hw.carmanagement.model.dto.report;
 
 public class MonthlyRequestsReportDTO {
-	private YearMonth yearMonth;
+	private java.time.YearMonth yearMonth;
 	private int requests;
 
 	public MonthlyRequestsReportDTO() {
 	}
 
-	public MonthlyRequestsReportDTO(YearMonth yearMonth, int requests) {
+	public MonthlyRequestsReportDTO(int year, int month, int requests) {
+		this.yearMonth = java.time.YearMonth.of(year, month);
+		this.requests = requests;
+	}
+	
+	public MonthlyRequestsReportDTO(java.time.YearMonth yearMonth, int requests) {
 		this.yearMonth = yearMonth;
 		this.requests = requests;
 	}
 
-	public YearMonth getYearMonth() {
+	public java.time.YearMonth getYearMonth() {
 		return yearMonth;
 	}
 
-	public void setYearMonth(YearMonth yearMonth) {
+	public void setYearMonth(java.time.YearMonth yearMonth) {
 		this.yearMonth = yearMonth;
 	}
 
