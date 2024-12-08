@@ -50,14 +50,11 @@ public class CarMapperImpl implements CarMapper {
 	}
 
 	@Override
-	public Car toEntity(UpdateCarDTO updateCarDTO, long carId, Set<Garage> garages) {
-		Car updatedCar = new Car(
-				carId,
-				updateCarDTO.getMake(),
-				updateCarDTO.getModel(),
-				updateCarDTO.getProductionYear(),
-				updateCarDTO.getLicensePlate()
-				);
+	public Car toEntity(UpdateCarDTO updateCarDTO, Car updatedCar, Set<Garage> garages) {
+		updatedCar.setMake(updateCarDTO.getMake());
+		updatedCar.setModel(updateCarDTO.getModel());
+		updatedCar.setProductionYear(updateCarDTO.getProductionYear());
+		updatedCar.setLicensePlate(updateCarDTO.getLicensePlate());
 		updatedCar.setGarages(garages);
 		return updatedCar;
 	}

@@ -12,6 +12,7 @@ import pu.fmi.wsp.hw.carmanagement.model.dto.report.GarageDailyAvailabilityRepor
 
 public interface GarageRepository extends CrudRepository<Garage, Long> {
 	Set<Garage> findAll();
+	Set<Garage> findAllById(Iterable<Long> ids);
 	Set<Garage> findByCityContainsIgnoreCase(String city);
 	
 	@Query("""

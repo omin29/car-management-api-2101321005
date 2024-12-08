@@ -10,5 +10,5 @@ import pu.fmi.wsp.hw.carmanagement.model.dto.update.UpdateMaintenanceDTO;
 public interface MaintenanceMapper {
 	ResponseMaintenanceDTO toResponse(Maintenance maintenance);
 	Maintenance toEntity(CreateMaintenanceDTO createMaintenanceDTO, Car car, Garage garage);
-	Maintenance toEntity(UpdateMaintenanceDTO updateMaintenanceDTO, long maintenanceId, Car car, Garage garage);
+	Maintenance toEntity(UpdateMaintenanceDTO updateMaintenanceDTO, Maintenance updatedMaintenance, Car car, Garage garage);
 }

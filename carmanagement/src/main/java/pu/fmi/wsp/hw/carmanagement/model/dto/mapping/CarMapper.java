@@ -11,5 +11,5 @@ import pu.fmi.wsp.hw.carmanagement.model.dto.update.UpdateCarDTO;
 public interface CarMapper {
 	ResponseCarDTO toResponse(Car car);
 	Car toEntity(CreateCarDTO createCarDTO, Set<Garage> garages);
-	Car toEntity(UpdateCarDTO updateCarDTO, long carId, Set<Garage> garages);
+	Car toEntity(UpdateCarDTO updateCarDTO, Car updatedCar, Set<Garage> garages);
 }

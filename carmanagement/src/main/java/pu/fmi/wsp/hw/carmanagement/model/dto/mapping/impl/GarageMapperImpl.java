@@ -33,14 +33,12 @@ public class GarageMapperImpl implements GarageMapper {
 	}
 
 	@Override
-	public Garage toEntity(UpdateGarageDTO updateGarageDTO, long garageId) {
-		return new Garage(
-				garageId,
-				updateGarageDTO.getName(),
-				updateGarageDTO.getLocation(),
-				updateGarageDTO.getCity(),
-				updateGarageDTO.getCapacity()
-				);
+	public Garage toEntity(UpdateGarageDTO updateGarageDTO, Garage updatedGarage) {
+		updatedGarage.setName(updateGarageDTO.getName());
+		updatedGarage.setLocation(updateGarageDTO.getLocation());
+		updatedGarage.setCity(updateGarageDTO.getCity());
+		updatedGarage.setCapacity(updateGarageDTO.getCapacity());
+		return updatedGarage;
 	}
 	
 }

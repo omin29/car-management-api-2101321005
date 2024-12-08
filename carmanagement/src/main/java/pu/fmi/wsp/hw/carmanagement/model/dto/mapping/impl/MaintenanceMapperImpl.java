@@ -39,12 +39,9 @@ public class MaintenanceMapperImpl implements MaintenanceMapper {
 	}
 
 	@Override
-	public Maintenance toEntity(UpdateMaintenanceDTO updateMaintenanceDTO, long maintenanceId, Car car, Garage garage) {
-		Maintenance updatedMaintenance = new Maintenance(
-				maintenanceId,
-				updateMaintenanceDTO.getServiceType(),
-				updateMaintenanceDTO.getScheduledDate()
-				);
+	public Maintenance toEntity(UpdateMaintenanceDTO updateMaintenanceDTO, Maintenance updatedMaintenance, Car car, Garage garage) {
+		updatedMaintenance.setServiceType(updateMaintenanceDTO.getServiceType());
+		updatedMaintenance.setScheduledDate(updateMaintenanceDTO.getScheduledDate());
 		updatedMaintenance.setCar(car);
 		updatedMaintenance.setGarage(garage);
 		return updatedMaintenance;
