@@ -121,17 +121,17 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 				.findFirst();
 		
 		if(garageReport.isEmpty() || garageReport.get().getAvailableCapacity() <= 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create maintenance request because there isn't available space in the specified garage.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update maintenance request because there isn't available space in the specified garage.");
 		}
 		
 		Optional<Car> car = carRepository.findById(updateMaintenanceDTO.getCarId());
 		if(car.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create maintenance request because specified car wasn't found.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update maintenance request because specified car wasn't found.");
 		}
 		
 		Optional<Garage> garage = garageRepository.findById(updateMaintenanceDTO.getGarageId());
 		if(garage.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create maintenance request because specified garage wasn't found.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update maintenance request because specified garage wasn't found.");
 		}
 		
 		Maintenance updatedMaintenance = maintenanceMapper.toEntity(updateMaintenanceDTO, fetchedMaintenance.get(), car.get(), garage.get());
