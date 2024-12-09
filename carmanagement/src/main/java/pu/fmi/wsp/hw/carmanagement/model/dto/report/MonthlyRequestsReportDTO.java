@@ -7,9 +7,9 @@ public class MonthlyRequestsReportDTO {
 	public MonthlyRequestsReportDTO() {
 	}
 
-	public MonthlyRequestsReportDTO(int year, int month, int requests) {
+	public MonthlyRequestsReportDTO(int year, int month, long requests) {
 		this.yearMonth = java.time.YearMonth.of(year, month);
-		this.requests = requests;
+		this.requests = (int)requests;
 	}
 	
 	public MonthlyRequestsReportDTO(java.time.YearMonth yearMonth, int requests) {

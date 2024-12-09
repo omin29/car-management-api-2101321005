@@ -75,11 +75,15 @@ public class CarServiceImpl implements CarService {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Car was not found.");
 		}
 		
-		Set<Garage> garages = garageRepository.findAllById(
-				Arrays
-					.stream(updateCarDTO.getGarageIds())
-					.boxed()
-					.collect(Collectors.toSet()));
+		Set<Garage> garages = null;
+		if(updateCarDTO.getGarageIds() != null) {
+			garages = garageRepository.findAllById(
+					Arrays
+						.stream(updateCarDTO.getGarageIds())
+						.boxed()
+						.collect(Collectors.toSet()));
+		}
+		
 		Car updatedCar = carMapper.toEntity(updateCarDTO, fetchedCar.get(), garages);
 		updatedCar = carRepository.save(updatedCar);
 		return carMapper.toResponse(updatedCar);

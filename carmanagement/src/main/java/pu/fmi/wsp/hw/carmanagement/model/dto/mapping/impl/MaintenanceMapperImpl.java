@@ -29,7 +29,7 @@ public class MaintenanceMapperImpl implements MaintenanceMapper {
 	@Override
 	public Maintenance toEntity(CreateMaintenanceDTO createMaintenanceDTO, Car car, Garage garage) {
 		Maintenance newMaintenance = new Maintenance(
-				0l,
+				null,
 				createMaintenanceDTO.getServiceType(),
 				createMaintenanceDTO.getScheduledDate()
 				);

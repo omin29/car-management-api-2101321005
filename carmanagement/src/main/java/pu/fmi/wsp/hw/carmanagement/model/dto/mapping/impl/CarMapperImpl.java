@@ -30,16 +30,16 @@ public class CarMapperImpl implements CarMapper {
 				car.getModel(),
 				car.getProductionYear(),
 				car.getLicensePlate(),
-				car.getGarages()
-					.stream()
-					.map(g -> garageMapper.toResponse(g))
-					.collect(Collectors.toSet()));
+				car.getGarages() == null ? Set.of() : car.getGarages()
+						.stream()
+						.map(g -> garageMapper.toResponse(g))
+						.collect(Collectors.toSet()));
 	}
 
 	@Override
 	public Car toEntity(CreateCarDTO createCarDTO, Set<Garage> garages) {
 		Car newCar = new Car(
-				0l,
+				null,
 				createCarDTO.getMake(),
 				createCarDTO.getModel(),
 				createCarDTO.getProductionYear(),

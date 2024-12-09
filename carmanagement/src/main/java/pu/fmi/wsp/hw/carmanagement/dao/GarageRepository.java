@@ -16,10 +16,10 @@ public interface GarageRepository extends CrudRepository<Garage, Long> {
 	Set<Garage> findByCityContainsIgnoreCase(String city);
 	
 	@Query("""
-			select new GarageDailyAvailabilityReportDTO(m.scheduledDate, count(m.id), g.capacity - count(m.id)) from garage g 
+			select new pu.fmi.wsp.hw.carmanagement.model.dto.report.GarageDailyAvailabilityReportDTO(m.scheduledDate, count(m.id), g.capacity - count(m.id)) from Garage g 
 			inner join g.maintenances m 
+			where g.id = :garageId and m.scheduledDate >= :startDate and m.scheduledDate <= :endDate 
 			group by g.id, m.scheduledDate 
-			where g.id = :garageId and m.scheduledDate >= :startDate and m.scheduledDate <= :endDate
 			""")
 	Set<GarageDailyAvailabilityReportDTO> getDailyAvailabilityReport(
 		@Param("garageId") Long garageId,

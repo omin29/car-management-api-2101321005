@@ -10,10 +10,10 @@ public class GarageDailyAvailabilityReportDTO {
 	public GarageDailyAvailabilityReportDTO() {
 	}
 
-	public GarageDailyAvailabilityReportDTO(LocalDate date, int requests, int availableCapacity) {
+	public GarageDailyAvailabilityReportDTO(LocalDate date, long requests, long availableCapacity) {
 		this.date = date;
-		this.requests = requests;
-		this.availableCapacity = availableCapacity;
+		this.requests = (int)requests;
+		this.availableCapacity = (int)availableCapacity;
 	}
 
 	public LocalDate getDate() {

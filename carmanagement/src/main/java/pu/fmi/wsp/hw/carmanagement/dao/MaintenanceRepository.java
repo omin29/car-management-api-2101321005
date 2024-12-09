@@ -16,10 +16,10 @@ public interface MaintenanceRepository extends CrudRepository<Maintenance, Long>
 	/*Applies all filters that are provided. Allows for more flexibility by also working 
 	  with only one provided date filter.*/
 	@Query("""
-			select m from maintenance m
+			select m from Maintenance m
 			where 
-				(:carId is null or m.car_id = :carId) and 
-				(:garageId is null or m.garage_id = :garageId) and
+				(:carId is null or m.car.id = :carId) and 
+				(:garageId is null or m.garage.id = :garageId) and
 				(:startDate is null or m.scheduledDate >= :startDate) and 
 				(:endDate is null or m.scheduledDate <= :endDate)
 			""")
@@ -30,11 +30,11 @@ public interface MaintenanceRepository extends CrudRepository<Maintenance, Long>
 		@Param("endDate") LocalDate endDate);
 	
 	@Query("""
-			select new MonthlyRequestsReportDTO(function('YEAR', m.scheduledDate), function('MONTH', m.scheduledDate), count(m.id)) from maintenance m
-			group by function('YEAR', m.scheduledDate), function('MONTH', m.scheduledDate) 
+			select new pu.fmi.wsp.hw.carmanagement.model.dto.report.MonthlyRequestsReportDTO(year(m.scheduledDate), month(m.scheduledDate), count(m.id)) from Maintenance m 
 			where 
-				m.garage_id = :garageId and 
-				m.scheduledDate >= :startDate and m.scheduledDate <= :endDate
+				m.garage.id = :garageId and 
+				m.scheduledDate >= :startDate and m.scheduledDate <= :endDate 
+			group by year(m.scheduledDate), month(m.scheduledDate)
 			"""
 			)
 	Set<MonthlyRequestsReportDTO> getMonthlyRequestsReport(

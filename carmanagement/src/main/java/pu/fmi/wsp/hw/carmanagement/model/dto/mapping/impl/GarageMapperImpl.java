@@ -24,7 +24,7 @@ public class GarageMapperImpl implements GarageMapper {
 	@Override
 	public Garage toEntity(CreateGarageDTO createGarageDTO) {
 		return new Garage(
-				0l,
+				null,
 				createGarageDTO.getName(),
 				createGarageDTO.getLocation(),
 				createGarageDTO.getCity(),
