@@ -2,14 +2,20 @@ package pu.fmi.wsp.hw.carmanagement.model.dto.create;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class CreateMaintenanceDTO {
-	@NotNull
+	@NotNull(message = "Garage ID must be specified.")
+	@Min(value = 1, message = "Garage ID must be a positive number.")
 	private long garageId;
 	@NotNull
+	@Min(value = 1, message = "Car ID must be a positive number.")
 	private long carId;
-	@NotNull
+	@NotBlank
+	@Size(min = 1, message = "Service type must be at least 1 character.")
 	private String serviceType;
 	@NotNull
 	private LocalDate scheduledDate;

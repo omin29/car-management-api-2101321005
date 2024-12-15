@@ -34,6 +34,28 @@ public class CarServiceImpl implements CarService {
 	@Override
 	public Set<ResponseCarDTO> getAllCars(Optional<String> carMake, Optional<Long> garageId, 
 			Optional<Integer> fromYear,	Optional<Integer> toYear) {
+		if(carMake.isPresent() && carMake.get().isBlank()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "carMake must be at least 1 character.");
+		}
+		
+		if(garageId.isPresent() && garageId.get() <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "garageId must be a positive number.");
+		}
+		
+		if(fromYear.isPresent() && fromYear.get() <= 0 ) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "fromYear must be a positive number.");
+		}
+		
+		if(toYear.isPresent() && toYear.get() <= 0 ) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "toYear must be a positive number.");
+		}
+		
+		if((fromYear.isPresent() && toYear.isEmpty()) || 
+				(fromYear.isEmpty() && toYear.isPresent()) || 
+				(fromYear.isPresent() && toYear.isPresent() && fromYear.get() > toYear.get())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid year range.");
+		}
+		
 		Set<Car> fetchedCars = carRepository.findAll(
 				carMake.orElse(null), 
 				garageId.orElse(null),
@@ -48,6 +70,10 @@ public class CarServiceImpl implements CarService {
 
 	@Override
 	public ResponseCarDTO getCarById(Long id) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Car> fetchedCar = carRepository.findById(id);
 		if(fetchedCar.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Car was not found.");
@@ -70,6 +96,10 @@ public class CarServiceImpl implements CarService {
 
 	@Override
 	public ResponseCarDTO updateCar(Long id, UpdateCarDTO updateCarDTO) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Car> fetchedCar = carRepository.findById(id);
 		if(fetchedCar.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Car was not found.");
@@ -92,6 +122,10 @@ public class CarServiceImpl implements CarService {
 
 	@Override
 	public boolean deleteCarById(Long id) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Car> fetchedCar = carRepository.findById(id);
 		if(fetchedCar.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Car was not found.");

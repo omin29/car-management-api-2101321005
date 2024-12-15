@@ -1,9 +1,16 @@
 package pu.fmi.wsp.hw.carmanagement.model.dto.update;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+
 public class UpdateGarageDTO {
+	@Size(min = 1, message = "Garage name must be at least 1 character.")
 	private String name;
+	@Size(min = 1, message = "Garage location must be at least 1 character.")
 	private String location;
+	@Min(value = 1, message = "Garage capacity must be at least 1.")
 	private int capacity;
+	@Size(min = 1, message = "Garage city must be at least 1 character.")
 	private String city;
 
 	public UpdateGarageDTO() {

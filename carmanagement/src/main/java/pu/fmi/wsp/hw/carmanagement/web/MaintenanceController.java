@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import pu.fmi.wsp.hw.carmanagement.model.dto.create.CreateMaintenanceDTO;
 import pu.fmi.wsp.hw.carmanagement.model.dto.report.MonthlyRequestsReportDTO;
 import pu.fmi.wsp.hw.carmanagement.model.dto.response.ResponseMaintenanceDTO;
@@ -23,8 +26,13 @@ import pu.fmi.wsp.hw.carmanagement.model.dto.update.UpdateMaintenanceDTO;
 import pu.fmi.wsp.hw.carmanagement.services.MaintenanceService;
 
 @RestController
-@Validated
-@RequestMapping("/maintenance")
+@RequestMapping(
+		value = "/maintenance",
+		produces = "application/json")
+@ApiResponses(value = {
+		@ApiResponse(responseCode = "200"),
+		@ApiResponse(responseCode = "400", content = {@Content()})
+})
 public class MaintenanceController {
 	private final MaintenanceService maintenanceService;
 	
@@ -42,6 +50,7 @@ public class MaintenanceController {
 	}
 	
 	@GetMapping("/{id}")
+	@ApiResponse(responseCode = "404", content = {@Content()})
 	public ResponseEntity<ResponseMaintenanceDTO> getMaintenanceById(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(maintenanceService.getMaintenanceById(id));
 	}
@@ -54,20 +63,22 @@ public class MaintenanceController {
 		return ResponseEntity.ok(maintenanceService.getMonthlyRequestsReport(garageId, startMonth, endMonth));
 	}
 	
-	@PostMapping
+	@PostMapping(consumes = "application/json")
 	public ResponseEntity<ResponseMaintenanceDTO> createMaintenance(
-			@RequestBody CreateMaintenanceDTO createMaintenanceDTO) {
+			@Valid @RequestBody CreateMaintenanceDTO createMaintenanceDTO) {
 		return ResponseEntity.ok(maintenanceService.createMaintenance(createMaintenanceDTO));
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping(value = "/{id}", consumes = "application/json")
+	@ApiResponse(responseCode = "404", content = {@Content()})
 	public ResponseEntity<ResponseMaintenanceDTO> updateMaintenance(
 			@PathVariable("id") Long id,
-			@RequestBody UpdateMaintenanceDTO updateMaintenanceDTO) {
+			@Valid @RequestBody UpdateMaintenanceDTO updateMaintenanceDTO) {
 		return ResponseEntity.ok(maintenanceService.updateMaintenance(id, updateMaintenanceDTO));
 	}
 	
 	@DeleteMapping("/{id}")
+	@ApiResponse(responseCode = "404", content = {@Content()})
 	public ResponseEntity<Boolean> deleteMaintenance(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(maintenanceService.deleteMaintenanceById(id));
 	}

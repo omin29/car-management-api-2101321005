@@ -1,21 +1,28 @@
 package pu.fmi.wsp.hw.carmanagement.model.dto.create;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class CreateGarageDTO {
-	@NotNull
+	@NotBlank
+	@Size(min = 1, message = "Garage name must be at least 1 character.")
 	private String name;
-	@NotNull
+	@NotBlank
+	@Size(min = 1, message = "Garage location must be at least 1 character.")
 	private String location;
-	@NotNull
+	@NotBlank
+	@Size(min = 1, message = "Garage city must be at least 1 character.")
 	private String city;
 	@NotNull
+	@Min(value = 1, message = "Garage capacity must be at least 1.")
 	private int capacity;
 
 	public CreateGarageDTO() {
 	}
 
-	public CreateGarageDTO(@NotNull String name, @NotNull String location, @NotNull String city,
+	public CreateGarageDTO(@NotBlank String name, @NotBlank String location, @NotBlank String city,
 			@NotNull int capacity) {
 		this.name = name;
 		this.location = location;

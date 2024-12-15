@@ -1,9 +1,12 @@
 package pu.fmi.wsp.hw.carmanagement.services.impl;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -43,6 +46,18 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	@Override
 	public Set<ResponseMaintenanceDTO> getAllMaintenances(Optional<Long> carId, Optional<Long> garageId,
 			Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
+		if(carId.isPresent() && carId.get() <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "carId must be a positive number.");
+		}
+		
+		if(garageId.isPresent() && garageId.get() <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "garageId must be a positive number.");
+		}
+		
+		if(startDate.isPresent() && endDate.isPresent() && startDate.get().isAfter(endDate.get())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date range.");
+		}
+		
 		Set<Maintenance> fetchedMaintenances = maintenanceRepository
 				.findAll(
 						carId.orElse(null),
@@ -58,6 +73,10 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 	@Override
 	public ResponseMaintenanceDTO getMaintenanceById(Long id) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Maintenance> fetchedMaintenance = maintenanceRepository.findById(id);
 		if(fetchedMaintenance.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Maintenance was not found.");
@@ -68,10 +87,47 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 	@Override
 	public Set<MonthlyRequestsReportDTO> getMonthlyRequestsReport(Long garageId, String startMonth, String endMonth) {
-		LocalDate startDate = LocalDate.parse(startMonth, DateTimeFormatter.ofPattern("uuuu-MM"));
-		LocalDate endDate = LocalDate.parse(endMonth, DateTimeFormatter.ofPattern("uuuu-MM"));
+		if(garageId <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "garageId must be a positive number.");
+		}
+		
+		YearMonth startYearMonth = null;
+		
+		try {
+			startYearMonth = YearMonth.parse(startMonth, DateTimeFormatter.ofPattern("uuuu-MM"));
+		} catch (DateTimeParseException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid startMonth. It must be provided in yyyy-mm format.");
+		}
+		
+		YearMonth endYearMonth = null;
+		
+		try {
+			endYearMonth = YearMonth.parse(endMonth, DateTimeFormatter.ofPattern("uuuu-MM"));
+		} catch (DateTimeParseException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid endMonth. It must be provided in yyyy-mm format.");
+		}
+		
+		if(startYearMonth.isAfter(endYearMonth)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid month range.");
+		}
+		
+		LocalDate startDate = startYearMonth.atDay(1);
+		LocalDate endDate = endYearMonth.atEndOfMonth();
 		Set<MonthlyRequestsReportDTO> monthlyRequestsReports = maintenanceRepository
 				.getMonthlyRequestsReport(garageId, startDate, endDate);
+		
+		//Populating months without requests
+		for(YearMonth current = startYearMonth, end = endYearMonth; !current.isAfter(end); current = current.plusMonths(1)) {
+			final YearMonth currentYearMonth = current; //Avoiding compiler error
+			if(!monthlyRequestsReports
+					.stream()
+					.anyMatch(r -> r.getYearMonth().equals(currentYearMonth))) {
+				monthlyRequestsReports.add(new MonthlyRequestsReportDTO(current, 0));
+			}
+		}
+		
+		//For returning chronologically sorted reports
+		monthlyRequestsReports = new TreeSet<>(monthlyRequestsReports);
 		
 		return monthlyRequestsReports;
 	}
@@ -86,7 +142,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 				.stream()
 				.findFirst();
 		
-		if(garageReport.isEmpty() || garageReport.get().getAvailableCapacity() <= 0) {
+		//If there isn't a report for the scheduled date, then the garage is at maximum available capacity.
+		if(garageReport.isPresent() && garageReport.get().getAvailableCapacity() <= 0) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create maintenance request because there isn't available space in the specified garage.");
 		}
 		
@@ -107,6 +164,10 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 	@Override
 	public ResponseMaintenanceDTO updateMaintenance(Long id, UpdateMaintenanceDTO updateMaintenanceDTO) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Maintenance> fetchedMaintenance = maintenanceRepository.findById(id);
 		if(fetchedMaintenance.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Maintenance was not found.");
@@ -120,7 +181,14 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 				.stream()
 				.findFirst();
 		
-		if(garageReport.isEmpty() || garageReport.get().getAvailableCapacity() <= 0) {
+		boolean sameGarageAndDate = 
+				fetchedMaintenance.get().getGarage().getId() == updateMaintenanceDTO.getGarageId() &&
+				fetchedMaintenance.get().getScheduledDate().equals(updateMaintenanceDTO.getScheduledDate());
+		/*If there isn't a report for the scheduled date, then the garage is at maximum available capacity. 
+		  There will be no problem with garage availability if the garage and scheduled date aren't changed.*/
+		if(garageReport.isPresent() && 
+				garageReport.get().getAvailableCapacity() <= 0 && 
+				!sameGarageAndDate) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update maintenance request because there isn't available space in the specified garage.");
 		}
 		
@@ -141,6 +209,10 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 	@Override
 	public boolean deleteMaintenanceById(Long id) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Maintenance> fetchedMaintenance = maintenanceRepository.findById(id);
 		if(fetchedMaintenance.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Maintenance was not found.");

@@ -1,9 +1,16 @@
 package pu.fmi.wsp.hw.carmanagement.model.dto.create;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+
 public class CreateCarDTO {
+	@Size(min = 1, message = "Car make must be at least 1 character.")
 	private String make;
+	@Size(min = 1, message = "Car model must be at least 1 character.")
 	private String model;
+	@Min(value = 1886, message = "Invalid car production year.")
 	private int productionYear;
+	@Size(min = 1, message = "Car license plate must be at least 1 character.")
 	private String licensePlate;
 	private long[] garageIds;
 	

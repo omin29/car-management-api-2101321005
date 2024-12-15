@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import pu.fmi.wsp.hw.carmanagement.model.dto.create.CreateGarageDTO;
 import pu.fmi.wsp.hw.carmanagement.model.dto.report.GarageDailyAvailabilityReportDTO;
 import pu.fmi.wsp.hw.carmanagement.model.dto.response.ResponseGarageDTO;
@@ -23,8 +26,13 @@ import pu.fmi.wsp.hw.carmanagement.model.dto.update.UpdateGarageDTO;
 import pu.fmi.wsp.hw.carmanagement.services.GarageService;
 
 @RestController
-@Validated
-@RequestMapping("/garages")
+@RequestMapping(
+		value = "/garages",
+		produces = "application/json")
+@ApiResponses(value = {
+		@ApiResponse(responseCode = "200"),
+		@ApiResponse(responseCode = "400", content = {@Content()})
+})
 public class GarageController {
 	private final GarageService garageService;
 	
@@ -39,6 +47,7 @@ public class GarageController {
 	}
 	
 	@GetMapping("/{id}")
+	@ApiResponse(responseCode = "404", content = {@Content()})
 	public ResponseEntity<ResponseGarageDTO> getGarageById(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(garageService.getGarageById(id));
 	}
@@ -51,19 +60,22 @@ public class GarageController {
 		return ResponseEntity.ok(garageService.getGarageReport(garageId, startDate, endDate));
 	}
 	
-	@PostMapping
-	public ResponseEntity<ResponseGarageDTO> createGarage(@RequestBody CreateGarageDTO createGarageDTO) {
+	@PostMapping(consumes = "application/json")
+	public ResponseEntity<ResponseGarageDTO> createGarage(
+			@Valid @RequestBody CreateGarageDTO createGarageDTO) {
 		return ResponseEntity.ok(garageService.createGarage(createGarageDTO));
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping(value = "/{id}", consumes = "application/json")
+	@ApiResponse(responseCode = "404", content = {@Content()})
 	public ResponseEntity<ResponseGarageDTO> updateGarage(
 			@PathVariable("id") Long id,
-			@RequestBody UpdateGarageDTO updateGarageDTO) {
+			@Valid @RequestBody UpdateGarageDTO updateGarageDTO) {
 		return ResponseEntity.ok(garageService.updateGarage(id, updateGarageDTO));
 	}
 	
 	@DeleteMapping("/{id}")
+	@ApiResponse(responseCode = "404", content = {@Content()})
 	public ResponseEntity<Boolean> deleteGarageById(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(garageService.deleteGarageById(id));
 	}

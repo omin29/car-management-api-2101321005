@@ -30,6 +30,10 @@ public class GarageServiceImpl implements GarageService {
 
 	@Override
 	public Set<ResponseGarageDTO> getAllGarages(Optional<String> city) {
+		if(city.isPresent() && city.get().isBlank()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "city must have at least 1 character.");
+		}
+		
 		Set<Garage> fetchedGarages;
 		if(city.isPresent()) {
 			fetchedGarages = garageRepository.findByCityContainsIgnoreCase(city.get());
@@ -46,6 +50,10 @@ public class GarageServiceImpl implements GarageService {
 
 	@Override
 	public ResponseGarageDTO getGarageById(Long id) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Garage> fetchedGarage = garageRepository.findById(id);
 		if(fetchedGarage.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garage was not found.");
@@ -57,6 +65,14 @@ public class GarageServiceImpl implements GarageService {
 	@Override
 	public Set<GarageDailyAvailabilityReportDTO> getGarageReport(Long garageId, LocalDate startDate,
 			LocalDate endDate) {
+		if(garageId <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "garageId must be a positive number.");
+		}
+		
+		if(startDate.isAfter(endDate)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "startDate can't be after endDate.");
+		}
+		
 		Set<GarageDailyAvailabilityReportDTO> garageReports = garageRepository
 				.getDailyAvailabilityReport(garageId, startDate, endDate);
 		return garageReports;
@@ -71,6 +87,10 @@ public class GarageServiceImpl implements GarageService {
 
 	@Override
 	public ResponseGarageDTO updateGarage(Long id, UpdateGarageDTO updateGarageDTO) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Garage> fetchedGarage = garageRepository.findById(id);
 		if(fetchedGarage.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garage was not found.");
@@ -83,6 +103,10 @@ public class GarageServiceImpl implements GarageService {
 
 	@Override
 	public boolean deleteGarageById(Long id) {
+		if(id <= 0l) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be a positive number.");
+		}
+		
 		Optional<Garage> fetchedGarage = garageRepository.findById(id);
 		if(fetchedGarage.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garage was not found.");
