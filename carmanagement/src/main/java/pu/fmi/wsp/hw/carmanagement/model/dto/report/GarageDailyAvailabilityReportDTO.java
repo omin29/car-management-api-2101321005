@@ -2,7 +2,7 @@ package pu.fmi.wsp.hw.carmanagement.model.dto.report;
 
 import java.time.LocalDate;
 
-public class GarageDailyAvailabilityReportDTO {
+public class GarageDailyAvailabilityReportDTO implements Comparable<GarageDailyAvailabilityReportDTO> {
 	private LocalDate date;
 	private int requests;
 	private int availableCapacity;
@@ -38,5 +38,10 @@ public class GarageDailyAvailabilityReportDTO {
 
 	public void setAvailableCapacity(int availableCapacity) {
 		this.availableCapacity = availableCapacity;
+	}
+
+	@Override
+	public int compareTo(GarageDailyAvailabilityReportDTO otherReport) {
+		return date.compareTo(otherReport.getDate());
 	}
 }

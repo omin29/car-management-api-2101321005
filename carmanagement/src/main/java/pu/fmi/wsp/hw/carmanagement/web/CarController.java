@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import pu.fmi.wsp.hw.carmanagement.model.dto.update.UpdateCarDTO;
 import pu.fmi.wsp.hw.carmanagement.services.CarService;
 
 @RestController
+@CrossOrigin
 @RequestMapping(
 		value = "/cars",
 		produces = "application/json")

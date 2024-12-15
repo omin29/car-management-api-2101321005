@@ -3,6 +3,7 @@ package pu.fmi.wsp.hw.carmanagement.services.impl;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -69,12 +70,28 @@ public class GarageServiceImpl implements GarageService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "garageId must be a positive number.");
 		}
 		
+		Optional<Garage> fetchedGarage = garageRepository.findById(garageId);
+		if(fetchedGarage.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garage was not found.");
+		}
+		
 		if(startDate.isAfter(endDate)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "startDate can't be after endDate.");
 		}
-		
+				
 		Set<GarageDailyAvailabilityReportDTO> garageReports = garageRepository
 				.getDailyAvailabilityReport(garageId, startDate, endDate);
+		
+		for(LocalDate current = startDate, end = endDate; !current.isAfter(end); current = current.plusDays(1) ) {
+			final LocalDate currentDate = current;
+			if(!garageReports
+					.stream()
+					.anyMatch(r -> r.getDate().equals(currentDate))) {
+				garageReports.add(new GarageDailyAvailabilityReportDTO(currentDate, 0, fetchedGarage.get().getCapacity()));
+			}
+		}
+		
+		garageReports = new TreeSet<>(garageReports);
 		return garageReports;
 	}
 

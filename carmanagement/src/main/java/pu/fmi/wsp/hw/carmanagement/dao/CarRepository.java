@@ -17,7 +17,7 @@ public interface CarRepository extends CrudRepository<Car, Long> {
 			left join c.garages g 
 			where 
 				(:make is null and :garageId is null and :fromYear is null and :toYear is null) or 
-				(:make is not null and c.make = :make) or 
+				(:make is not null and lower(c.make) like lower(concat('%', :make, '%'))) or 
 				(:garageId is not null and g.id = :garageId) or 
 				(:fromYear is not null and :toYear is not null and 
 					c.productionYear >= :fromYear and c.productionYear <= :toYear)
